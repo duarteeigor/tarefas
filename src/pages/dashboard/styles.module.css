@@ -1,0 +1,173 @@
+.main{
+    display: flex;
+    flex-direction: column;
+
+    gap: 4rem;
+}
+
+.container{
+    min-height: 50dvh;
+    padding: 5rem 0;
+    width: 100%;
+    background-color: #0F0F0F;
+}
+
+.containerItems{
+    width: 90%;
+    display: flex;
+    margin: 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 23px;
+    padding: 0 1rem;
+}
+
+.title{
+    color: #fff;
+}
+
+.form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+}
+
+.textarea{
+    height: 15rem;
+    padding: 12px 10px;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.textarea:focus{
+    outline: none;
+}
+
+.checkboxContainer{
+    color: #fff ;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.checkbox{
+    width: 30px;      /* opcional, nem sempre funciona */
+    height: 30px;     /* opcional */
+   
+    cursor: pointer;
+}
+
+.button{
+    width: 100%;
+    border: 0;
+    background-color: #3183FF;
+    padding: 12px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 18px;
+}
+
+.containerBottom{
+    min-height: 50dvh;
+    width: 100%;
+}
+
+.containerItemsBottom{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 0 1rem;
+    gap: 20px;
+}
+
+.titleBottom{
+    text-align: center;
+}
+
+.tasks{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid grey;
+    padding: 1rem 2rem;
+    gap: 10px;
+    border-radius: 8px;
+}
+
+.containerPublicShare{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.public{
+    background-color: #3183FF;
+    padding: 0.5rem 1.2rem;
+    color: #fff;
+    font-weight: 400;
+    border-radius: 4px;
+}
+
+.containerTextTrash{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.text{
+    max-width: 80%;
+    text-align: justify;
+    word-wrap: break-word;
+    word-break: break-all;
+    line-height: 150%;
+}
+
+.buttonTrash{
+    border: none;
+    margin: 0 8px;
+}
+
+@media screen and (min-width: 590px){
+    .containerItems{
+        max-width: 1280px;
+        padding: 0 2rem;
+        align-items: baseline;
+    }
+
+    .title{
+        font-size: 3rem;
+    }
+
+    .containerItemsBottom{
+        max-width: 1280px;
+        padding: 0 2rem;
+    }
+
+    .titleBottom{
+        font-size: 3rem;
+    }
+
+    .tasks{
+        padding: 2rem 2rem;
+    }
+
+    .public{
+        font-size: 12px;
+    }
+
+   .text{
+        max-width: 85%;
+        font-size: 16px;
+   }
+
+
+   .trashIcon{
+        transform: scale(1.4);
+   }
+}
