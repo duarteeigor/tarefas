@@ -3,9 +3,25 @@ import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 
 import homeImg from "../../public/assets/hero.png"
+import { useEffect, useState } from "react";
+import { supabase } from "@/services/supabaseClient";
 
 
 export default function Home() {
+
+    const [count, setCount] = useState(0)
+
+    useEffect(()=> {
+        async function getDataCount(){
+         const {count}= await supabase
+            .from("tasks")
+            .select("*", {count: "exact", head: true})
+          
+          setCount(count as number)
+        }
+
+        getDataCount()
+    },[])
   return (
     <>
       <Head>
@@ -29,7 +45,7 @@ export default function Home() {
 
           <div className={styles.containerButtons}>
             <button className={styles.buttons}>
-              + 7 mil posts
+              + {count} posts
             </button>
 
             <button className={styles.buttons}>
