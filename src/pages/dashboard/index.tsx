@@ -189,9 +189,9 @@ export default function Dashboard({ user }: UserProps) {
                                 </Link>
                             ) : (
                                 <div className={styles.containerTextTrash}>
-                                <p className={styles.text}>{item.task}</p>
-                                <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
-                            </div>
+                                    <p className={styles.text}>{item.task}</p>
+                                    <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
+                                </div>
                             )}
 
                         </div>
