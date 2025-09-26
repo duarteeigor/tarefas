@@ -1,6 +1,6 @@
 import { type GetServerSideProps } from "next";
 import styles from "./styles.module.css";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import TextArea from "@/components/textarea";
 
 import { FaShare } from "react-icons/fa";
@@ -8,6 +8,8 @@ import { FaTrash } from "react-icons/fa";
 import { type ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { supabase } from "@/services/supabaseClient";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface UserProps {
     user: {
@@ -15,7 +17,7 @@ interface UserProps {
     }
 }
 
-interface TaskProps{
+interface TaskProps {
     id: number,
     task: string,
     is_public: boolean,
@@ -28,29 +30,70 @@ export default function Dashboard({ user }: UserProps) {
     const [publicTask, setPublicTask] = useState(false)
     const [tasks, setTasks] = useState<TaskProps[]>([])
 
+    const { data: session, status } = useSession()
+    const router = useRouter()
+
     useEffect(() => {
-        
-        getData()
-    }, [])
 
-    async function getData() {
-            try {
-                const { data, error } = await supabase
-                    .from("tasks")
-                    .select("*")
-
-                if (error) {
-                    console.error(error.message)
-                }
-                console.log(data)
-                setTasks(data ?? [])
-            } catch (error) {
-
-            }
+        if (status === "unauthenticated") {
+            router.replace("/")
         }
 
+
+        //FAZENDO FETCH DOS VALORES JA CADASTRADOS NO BANCO
+
+        async function getData() {
+            const { data, error } = await supabase
+                .from("tasks")
+                .select("*")
+                .eq("user_email", user.email)
+                .order("created_at", { ascending: false })
+
+            if (error) {
+                console.error(error.message)
+            }
+
+            setTasks(data ?? [])
+
+        }
+
+        getData()
+
+        //FAZENDO FETCH DAS ALTERACOES COM REALTIME
+        const channel = supabase
+            .channel("public:tasks")
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "tasks",
+                    filter: `user_email=eq.${user.email}`
+                },
+                (payload) => setTasks(prev => [payload.new as TaskProps, ...prev])
+            ).on(
+                "postgres_changes",
+                {
+                    event: "DELETE",
+                    schema: "public",
+                    table: "tasks"
+                },
+                (payload) => setTasks(prev => prev.filter(task => task.id !== payload.old.id))
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+
+
+    }, [session])
+
+
+
+
+
     function handleChangePublic(e: ChangeEvent<HTMLInputElement>) {
-        console.log(e.target.checked)
         setPublicTask(e.target.checked)
     }
 
@@ -67,15 +110,15 @@ export default function Dashboard({ user }: UserProps) {
                     is_public: publicTask,
                     created_at: new Date(),
                     user_email: user.email
-                })
+                }).select()
 
             if (error) {
                 console.error(error.message)
             }
-            
+
             setInput("")
             setPublicTask(false)
-            getData()
+            console.log(user)
 
         } catch (error) {
             console.error(error)
@@ -83,18 +126,18 @@ export default function Dashboard({ user }: UserProps) {
 
     }
 
-    async function handleDeleteTask(id: number){
+    async function handleDeleteTask(id: number) {
         try {
-            const response = await supabase
+            const { error } = await supabase
                 .from("tasks")
                 .delete()
                 .eq("id", id)
-            
-            if(response.error){
-                console.error(response.error.message)
+                .select()
+
+            if (error) {
+                console.error(error.message)
             }
 
-            getData()
         } catch (error) {
             console.error(error)
         }
@@ -107,6 +150,7 @@ export default function Dashboard({ user }: UserProps) {
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <TextArea
                             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
+                            value={input}
                             placeholder="Digite uma tarefa..."
                             className={styles.textarea}
                         />
@@ -129,18 +173,27 @@ export default function Dashboard({ user }: UserProps) {
                     <h1 className={styles.titleBottom}>Minhas tarefas</h1>
                     {tasks.map((item) => (
                         <div key={item.id} className={styles.tasks}>
-
-                            {item.is_public &&(
+                            {item.is_public && (
                                 <div className={styles.containerPublicShare}>
-                                <span className={styles.public}>PUBLICA</span>
-                                <FaShare size={18} color="#3183FF" />
+                                    <span className={styles.public}>PUBLICA</span>
+                                    <FaShare size={18} color="#3183FF" />
+                                </div>
+                            )}
+
+                            {item.is_public ? (
+                                <Link href={`/task/${item.id}`}>
+                                    <div className={styles.containerTextTrash}>
+                                        <p className={styles.text}>{item.task}</p>
+                                        <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
+                                    </div>
+                                </Link>
+                            ) : (
+                                <div className={styles.containerTextTrash}>
+                                <p className={styles.text}>{item.task}</p>
+                                <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
                             </div>
                             )}
 
-                            <div className={styles.containerTextTrash}>
-                                <p className={styles.text}>{item.task}</p>
-                                <button onClick={()=> handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
-                            </div>
                         </div>
                     ))}
 
@@ -168,6 +221,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
             user: {
                 email: session.user.email
             }
+
         }
     }
 }
