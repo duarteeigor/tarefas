@@ -2,6 +2,8 @@ import { supabase } from "@/services/supabaseClient";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 
+import styles from "./styles.module.css"
+
 interface TaskProps {
     id: number,
     task: string,
