@@ -5,12 +5,13 @@
 }
 
 .container{
+    height: 100%;
     width: 90%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 0 auto;
-    padding: 3rem 1rem;
+    padding: 3rem 0;
 }
 
 .container a {
