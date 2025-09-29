@@ -42,7 +42,7 @@ export default function DetailTask({ taskData, comments }: TaskDataFormat,) {
 
     useEffect(()=> {
 
-        if(status !== "authenticated"){
+        if(status === "unauthenticated"){
         router.replace("/")
     }
     },[status])
