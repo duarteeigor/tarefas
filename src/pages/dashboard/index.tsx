@@ -129,14 +129,23 @@ export default function Dashboard({ user }: UserProps) {
 
     async function handleDeleteTask(id: number) {
         try {
-            const { error } = await supabase
+
+            const {error: errorComment}= await supabase
+                .from("comments")
+                .delete()
+                .eq("task_id", id)
+
+            if(errorComment){
+                console.error(errorComment)
+            }
+
+            const { error: errorTasks } = await supabase
                 .from("tasks")
                 .delete()
                 .eq("id", id)
-                .select()
 
-            if (error) {
-                console.error(error.message)
+            if (errorTasks) {
+                console.error(errorTasks.message)
             }
 
         } catch (error) {
@@ -147,7 +156,7 @@ export default function Dashboard({ user }: UserProps) {
     async function handleCopyUrl(id: number) {
         const url = navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_BASE_URL}/task/${id}`)
 
-        toast.success("Url copiada com sucesso!", {style: {fontSize: 20}})
+        toast.success("Url copiada com sucesso!", { style: { fontSize: 20 } })
     }
     return (
         <main className={styles.main}>
@@ -178,23 +187,25 @@ export default function Dashboard({ user }: UserProps) {
             <section className={styles.containerBottom}>
                 <div className={styles.containerItemsBottom}>
                     <h1 className={styles.titleBottom}>Minhas tarefas</h1>
-                    
+
                     {tasks.map((item) => (
                         <div key={item.id} className={styles.tasks}>
                             {item.is_public && (
                                 <div className={styles.containerPublicShare}>
                                     <span className={styles.public}>PUBLICA</span>
-                                    <FaShare onClick={()=>handleCopyUrl(item.id)} size={18} cursor={"pointer"} color="#3183FF" />
+                                    <FaShare onClick={() => handleCopyUrl(item.id)} size={18} cursor={"pointer"} color="#3183FF" />
                                 </div>
                             )}
 
                             {item.is_public ? (
-                                <Link href={`/task/${item.id}`}>
-                                    <div className={styles.containerTextTrash}>
+
+                                <div className={styles.containerTextTrash}>
+                                    <Link href={`/task/${item.id}`}>
                                         <p className={styles.text}>{item.task}</p>
-                                        <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaRegTrashAlt size={18} className={styles.trashIcon} color="#EA3140" /></button>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                        <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaRegTrashAlt size={18} className={styles.trashIcon} color="#EA3140" /></button>     
+                                </div>
+
                             ) : (
                                 <div className={styles.containerTextTrash}>
                                     <p className={styles.text}>{item.task}</p>
@@ -207,7 +218,7 @@ export default function Dashboard({ user }: UserProps) {
 
                 </div>
             </section>
-        </main>
+        </main >
     )
 }
 
