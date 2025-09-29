@@ -131,7 +131,7 @@
     align-items: center;
     width: 100%;
     position: relative;     
-    background-color: aqua;
+   
 }
 
 .text {
@@ -140,7 +140,6 @@
     margin-right: 50px;      
     word-break: break-all;   
     line-height: 1.5;
-    background-color: aquamarine;
     font-size: 14px;
 }
 
