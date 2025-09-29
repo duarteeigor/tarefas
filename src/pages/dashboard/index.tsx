@@ -4,12 +4,13 @@ import { getSession, useSession } from "next-auth/react";
 import TextArea from "@/components/textarea";
 
 import { FaShare } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { type ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { supabase } from "@/services/supabaseClient";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface UserProps {
     user: {
@@ -142,6 +143,12 @@ export default function Dashboard({ user }: UserProps) {
             console.error(error)
         }
     }
+
+    async function handleCopyUrl(id: number) {
+        const url = navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_BASE_URL}/task/${id}`)
+
+        toast.success("Url copiada com sucesso!", {style: {fontSize: 20}})
+    }
     return (
         <main className={styles.main}>
             <section className={styles.container}>
@@ -171,12 +178,13 @@ export default function Dashboard({ user }: UserProps) {
             <section className={styles.containerBottom}>
                 <div className={styles.containerItemsBottom}>
                     <h1 className={styles.titleBottom}>Minhas tarefas</h1>
+                    
                     {tasks.map((item) => (
                         <div key={item.id} className={styles.tasks}>
                             {item.is_public && (
                                 <div className={styles.containerPublicShare}>
                                     <span className={styles.public}>PUBLICA</span>
-                                    <FaShare size={18} color="#3183FF" />
+                                    <FaShare onClick={()=>handleCopyUrl(item.id)} size={18} cursor={"pointer"} color="#3183FF" />
                                 </div>
                             )}
 
@@ -184,13 +192,13 @@ export default function Dashboard({ user }: UserProps) {
                                 <Link href={`/task/${item.id}`}>
                                     <div className={styles.containerTextTrash}>
                                         <p className={styles.text}>{item.task}</p>
-                                        <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
+                                        <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaRegTrashAlt size={18} className={styles.trashIcon} color="#EA3140" /></button>
                                     </div>
                                 </Link>
                             ) : (
                                 <div className={styles.containerTextTrash}>
                                     <p className={styles.text}>{item.task}</p>
-                                    <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaTrash size={18} className={styles.trashIcon} color="#EA3140" /></button>
+                                    <button onClick={() => handleDeleteTask(item.id)} className={styles.buttonTrash}><FaRegTrashAlt size={18} className={styles.trashIcon} color="#EA3140" /></button>
                                 </div>
                             )}
 
@@ -205,7 +213,7 @@ export default function Dashboard({ user }: UserProps) {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     const session = await getSession({ req });
-    console.log(session?.user)
+    // console.log(session?.user)
 
     if (!session?.user) {
         return {
