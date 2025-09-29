@@ -3,25 +3,16 @@ import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 
 import homeImg from "../../public/assets/hero.png"
-import { useEffect, useState } from "react";
 import { supabase } from "@/services/supabaseClient";
+import { GetStaticProps } from "next";
 
+interface HomeProps{
+  tasks: number,
+  comments: number
+}
 
-export default function Home() {
-
-    const [count, setCount] = useState(0)
-
-    useEffect(()=> {
-        async function getDataCount(){
-         const {count}= await supabase
-            .from("tasks")
-            .select("*", {count: "exact", head: true})
-          
-          setCount(count as number)
-        }
-
-        getDataCount()
-    },[])
+export default function Home({tasks, comments}: HomeProps) {
+  
   return (
     <>
       <Head>
@@ -45,11 +36,11 @@ export default function Home() {
 
           <div className={styles.containerButtons}>
             <button className={styles.buttons}>
-              + {count} posts
+              + {tasks} posts
             </button>
 
             <button className={styles.buttons}>
-              + 1 mil comentarios
+              + {comments} comentarios
             </button>
           </div>
         </div>
@@ -57,4 +48,34 @@ export default function Home() {
 
     </>
   );
+}
+
+export const getStaticProps: GetStaticProps = async ()=>{
+
+    const {count: quantityTasks, error: errorTasks} = await supabase
+      .from("tasks")
+      .select("*", {count: "exact", head:true})
+    
+    if(errorTasks){
+      console.error(errorTasks.message)
+    }
+
+    console.log(quantityTasks)
+
+    const {count: quantityComments, error: errorComments} = await supabase
+      .from("comments")
+      .select("*", {count:"exact", head: true})
+
+    if(errorComments){
+      console.error(errorComments.message)
+    }
+      
+
+    return {
+      props: {
+        tasks: quantityTasks,
+        comments: quantityComments
+      },
+      revalidate: 60
+    }
 }
