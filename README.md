@@ -30,4 +30,4 @@ O projeto foi desenvolvido com o intuito de aprimorar minhas habilidades utiliza
 
 ## Link do Projeto
 
-[Veja o projeto aqui](INSIRA_O_LINK_AQUI)
+[Veja o projeto aqui](https://dev-tarefas.vercel.app/)
