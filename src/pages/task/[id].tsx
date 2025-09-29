@@ -42,10 +42,10 @@ export default function DetailTask({ taskData, comments }: TaskDataFormat,) {
 
     useEffect(()=> {
 
-        if(status === "unauthenticated"){
+        if(status !== "authenticated"){
         router.replace("/")
     }
-    },[])
+    },[status])
 
 
     async function handleSubmit(e: FormEvent) {
