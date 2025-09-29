@@ -126,26 +126,31 @@
 }
 
 .containerTextTrash {
-    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
+    width: 100%;
+    position: relative;     
+    background-color: aqua;
 }
 
 .text {
-    max-width: 80%;
-    text-align: justify;
-    word-wrap: break-word;
-    word-break: break-all;
-    line-height: 150%;
+    flex-grow: 1;
+    text-align: justify;            
+    margin-right: 50px;      
+    word-break: break-all;   
+    line-height: 1.5;
+    background-color: aquamarine;
 }
 
+
 .buttonTrash {
+    position: absolute;
+    right: 0;
     border: none;
-    margin: 0 8px;
+    background: none;
     cursor: pointer;
 }
+
 
 @media screen and (min-width: 590px) {
     .containerItems {
