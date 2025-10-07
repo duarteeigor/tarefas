@@ -3,23 +3,12 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
 import styles from "./styles.module.css"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
 
 
 
 export default function Header() {
     const router = useRouter()
     const { data: session, status } = useSession()
-
-
-    //  try {
-    //     if (session) {
-    //         router.replace("/dashboard")
-    //     }
-    // } catch (error) {
-    //     console.log(error)
-    // }
-
 
 
     return (
